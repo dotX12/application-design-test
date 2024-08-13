@@ -1,0 +1,216 @@
+basePath: /
+definitions:
+  CreateOrderRequest:
+    properties:
+      email:
+        example: foo@bar.com
+        type: string
+      from:
+        example: "2024-09-12T00:00:00Z"
+        format: date-time
+        type: string
+      hotel_id:
+        example: reddison
+        type: string
+      room_id:
+        example: lux
+        type: string
+      to:
+        example: "2024-09-15T00:00:00Z"
+        format: date-time
+        type: string
+    type: object
+  CreateRoomAvailabilityRequest:
+    properties:
+      date:
+        format: date-time
+        type: string
+      hotel_id:
+        type: string
+      quota:
+        type: integer
+      room_id:
+        type: string
+    type: object
+  ErrorDetailComponentResponse:
+    properties:
+      field:
+        description: Field that caused the error (if any)
+        example:
+        - source
+        items:
+          type: string
+        type: array
+      message:
+        description: Error message
+        example: 'source: Field valid values are [foo bar] (enum)'
+        type: string
+    type: object
+  ErrorDetailsResponse:
+    properties:
+      details:
+        description: Details of the error
+        items:
+          $ref: '#/definitions/ErrorDetailComponentResponse'
+        type: array
+      message:
+        description: Detailed message of the error
+        example: Validation failed for the request parameters
+        type: string
+      slug:
+        description: Slug of the error
+        example: 400_malformed_request
+        type: string
+      status:
+        description: Small message of the error
+        example: Unprocessable Entity
+        type: string
+    type: object
+  ErrorResponse:
+    properties:
+      error:
+        allOf:
+        - $ref: '#/definitions/ErrorDetailsResponse'
+        description: Error response
+    type: object
+  HealthCheckResponse:
+    properties:
+      status:
+        type: string
+    type: object
+  OrderResponse:
+    properties:
+      email:
+        example: foo@bar.com
+        type: string
+      from:
+        example: "2021-01-01"
+        format: date
+        type: string
+      hotel_id:
+        example: resort
+        type: string
+      id:
+        type: string
+      room_id:
+        example: premium
+        type: string
+      to:
+        example: "2021-01-02"
+        format: date
+        type: string
+    type: object
+host: localhost:8000
+info:
+  contact: {}
+  description: This is a sample swagger for Booking 2gis microservice.
+  title: Booking Documentation
+  version: "1.0"
+paths:
+  /v1/healthcheck:
+    get:
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/HealthCheckResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "422":
+          description: Unprocessable Entity
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+      summary: Healthcheck
+      tags:
+      - healthcheck
+  /v1/orders:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: '-'
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/CreateOrderRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/OrderResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "422":
+          description: Unprocessable Entity
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+      summary: Create new order
+      tags:
+      - orders
+  /v1/orders/{order_id}:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - in: path
+        name: order_id
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/OrderResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "422":
+          description: Unprocessable Entity
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+      summary: Get order by ID
+      tags:
+      - orders
+  /v1/rooms:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: '-'
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/CreateRoomAvailabilityRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/OrderResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "422":
+          description: Unprocessable Entity
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+      summary: Create new room availability
+      tags:
+      - rooms
+swagger: "2.0"

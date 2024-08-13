@@ -1,0 +1,12 @@
+services:
+  otel-collector:
+    image: otel/opentelemetry-collector-contrib:0.100.0
+    command: ["--config=/etc/otel-collector.yaml"]
+    environment:
+      UPTRACE_ENDPOINT: ${UPTRACE_ENDPOINT}
+      UPTRACE_DSN: ${UPTRACE_DSN}
+    volumes:
+      - ./otel-collector-config.yaml:/etc/otel-collector.yaml
+    ports:
+      - 4317:4317
+      - 4318:4318
