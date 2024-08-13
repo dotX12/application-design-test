@@ -1,66 +1,22 @@
 # Application design
 
-В коде представлен прототип сервиса бронирования номеров в отелях,
-в котором реализована возможность забронировать свободный номер в отеле.
-
-Сервис будет развиваться, например:
-
-- появится отправка письма-подтверждения о бронировании
-- появятся скидки, промокоды, программы лояльности
-- появится возможность бронирования нескольких номеров
-
-## Задание
-
-Провести рефакторинг структуры и кода приложения, исправить существующие
-проблемы в логике. Персистентное хранение реализовывать не требуется,
-все данные храним в памяти сервиса.
-
-В результате выполнения задания ожидается структурированный код сервиса,
-с корректно работающей логикой сценариев бронирования номеров в отелях.
-
-Чеклист:
-
-- код реорганизован и выделены слои
-- выделены абстракций и интерфейсы
-- техническе и логические ошибки исправлены
-
-Ограничения:
-
-- ожидаем реализацию, которая управляет состоянием в памяти приложения,
- но которую легко заменить на внешнее хранилище
-- если у тебя есть опыт с Go: для решения надо использовать только
- стандартную библиотеку Go + роутер (например chi)
-- если у тебя нет опыта с Go: можно реализовать решение на своем
- любимом стеке технологий
-
-## Что будет на встрече
-
-На встрече ожидаем что ты продемонстрируешь экран и презентуешь свое решение:
-расскажешь какими проблемами обладает исходный код и как они решены в твоем варианте.
-Мы будем задавать вопросы о том почему было решено разделить ответственность между
-компонентами тем или иным образом, какими принципами ты при этом руководствуешься.
-Спросим что будет если продакт решит добавить какую-то новую фичу — как она ляжет
-на предложенную тобой структуру. Также можем поговорить и о более технических вещах:
-о значениях и указателях, многопоточности, интерфейсах, каналах.
-
-## Например
-
-```sh
-go run main.go
+### Logs format
+```
+2024-08-13T14:05:59+03:00 TRC internal\presentation\http\v1\handler\create_order.go:26 > Received request to CreateOrderHandler spanId=c9ff6fa7255542bb traceId=66bb3e17076a3fd1f1552e18bd70264b
+2024-08-13T14:05:59+03:00 TRC internal\application\pipeline\logging.go:29 > Received request for processing in mediator request={"email":"foo@bar.com","from":"2025-01-02T00:00:00Z","hotel_id":"string","room_id":"string","to":"2025-01-02T00:00:00Z"} spanId=5f6108f795686b7e traceId=66bb3e17076a3fd1f1552e18bd70264b type=AddOrderCommand
+2024-08-13T14:05:59+03:00 TRC internal\application\command\create_order.go:43 > AddOrderCommandHandler.Handle spanId=5f6108f795686b7e traceId=66bb3e17076a3fd1f1552e18bd70264b
+2024-08-13T14:05:59+03:00 TRC internal\application\pipeline\logging.go:52 > Request processed successfully in mediator request={"email":"foo@bar.com","from":"2025-01-02T00:00:00Z","hotel_id":"string","room_id":"string","to":"2025-01-02T00:00:00Z"} response={"From":"2025-01-02T00:00:00Z","HotelID":{},"ID":{},"RoomID":{},"To":"2025-01-02T00:00:00Z","UserEmail":{}} spanId=5f6108f795686b7e traceId=66bb3e17076a3fd1f1552e18bd70264b type=AddOrderCommand
+2024-08-13T14:05:59+03:00 TRC internal\application\event\order_created.go:30 > We send a email about the hotel reservation... created_at="2024-08-13 14:05:59.8012522 +0300 MSK m=+200.421637801" email=foo@bar.com event_id=f069d186-cdd0-4613-983d-4d7dc33006bd from=2025-01-02T00:00:00Z order_id=fbf3de2a-8cbe-48c6-ae04-faf46f84802d spanId=5f6108f795686b7e to=2025-01-02T00:00:00Z topic=booking.OrderCreated traceId=66bb3e17076a3fd1f1552e18bd70264b
+2024-08-13T14:05:59+03:00 INF pkg\logging\fiberzerolog\fiber.go:80 > Success bytesReceived=149 bytesSent=144 ip=127.0.0.1 latency="89.7µs" method=POST spanId=c9ff6fa7255542bb status=201 traceId=66bb3e17076a3fd1f1552e18bd70264b ua="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36" url=/v1/orders
 ```
 
-```sh
-curl --location --request POST 'localhost:8080/orders' \
---header 'Content-Type: application/json' \
---data-raw '{
-    "hotel_id": "reddison",
-    "room_id": "lux",
-    "email": "guest@mail.ru",
-    "from": "2024-01-02T00:00:00Z",
-    "to": "2024-01-04T00:00:00Z"
-}'
-```
+## Docs
 
+![image](https://github.com/user-attachments/assets/7277ce2b-d540-47d5-bcd8-db71b9dcb9bc)
+![image](https://github.com/user-attachments/assets/eaf64939-fac6-46af-a94d-ca26784478aa)
+
+## Metrics
+![image](https://github.com/user-attachments/assets/debbd7b0-c607-4547-b151-08fa5e95612f)
 
 ```sh
 swag init -g cmd/http.go --instanceName v1 --parseDependency --collectionFormat multi
